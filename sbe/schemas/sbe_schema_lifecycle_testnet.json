@@ -1,42 +1,27 @@
-{
-  "environment": "TESTNET",
-  "latestSchema":
-  {
-    "id": 3,
-    "version": 1,
-    "releaseDate": "2025-08-06"
-  },
-  "deprecatedSchemas":
-  [
-    {
-      "id": 3,
-      "version": 0,
-      "releaseDate": "2025-04-02",
-      "deprecatedDate": "2025-08-06"
-    }
-  ],
-  "retiredSchemas":
-  [
-    {
-      "id": 2,
-      "version": 1,
-      "releaseDate": "2024-11-28",
-      "deprecatedDate": "2025-04-02",
-      "retiredDate": "2025-10-02"
-    },
-    {
-      "id": 2,
-      "version": 0,
-      "releaseDate": "2024-04-04",
-      "deprecatedDate": "2024-11-28",
-      "retiredDate": "2025-05-28"
-    },
-    {
-      "id": 1,
-      "version": 0,
-      "releaseDate": "2023-12-08",
-      "deprecatedDate": "2024-04-04",
-      "retiredDate": "2024-10-04"
-    }
-  ]
-}
+import time
+from binance.client import Client
+
+api_key = "SUA_API_KEY_AQUI"
+api_secret = "SUA_SECRET_KEY_AQUI"
+client = Client(api_key, api_secret, testnet=True)
+
+symbol = "BTCUSDT"
+quantidade = 0.010
+limite_compra = 60000.0   # exemplo
+limite_venda  = 65000.0   # exemplo
+
+while True:
+    price = float(client.get_symbol_ticker(symbol=symbol)['price'])
+    print("Preço:", price)
+    if price <= limite_compra:
+        print("Comprando...")
+        client.order_market_buy(symbol=symbol, quantity=quantidade)
+        # esperar para o preço subir
+        while True:
+            p = float(client.get_symbol_ticker(symbol=symbol)['price'])
+            if p >= limite_venda:
+                print("Vendendo...")
+                client.order_market_sell(symbol=symbol, quantity=quantidade)
+                break
+            time.sleep(5)
+    time.sleep(5)
