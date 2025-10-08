@@ -1,42 +1,42 @@
-{
-  "environment": "TESTNET",
-  "latestSchema":
-  {
-    "id": 3,
-    "version": 1,
-    "releaseDate": "2025-08-06"
-  },
-  "deprecatedSchemas":
-  [
-    {
-      "id": 3,
-      "version": 0,
-      "releaseDate": "2025-04-02",
-      "deprecatedDate": "2025-08-06"
-    }
-  ],
-  "retiredSchemas":
-  [
-    {
-      "id": 2,
-      "version": 1,
-      "releaseDate": "2024-11-28",
-      "deprecatedDate": "2025-04-02",
-      "retiredDate": "2025-10-02"
-    },
-    {
-      "id": 2,
-      "version": 0,
-      "releaseDate": "2024-04-04",
-      "deprecatedDate": "2024-11-28",
-      "retiredDate": "2025-05-28"
-    },
-    {
-      "id": 1,
-      "version": 0,
-      "releaseDate": "2023-12-08",
-      "deprecatedDate": "2024-04-04",
-      "retiredDate": "2024-10-04"
-    }
-  ]
-}
+from binance.client import Client
+from binance.enums import *
+import time
+
+# 🔑 Coloque aqui suas chaves da Binance Testnet
+api_key = "SUA_API_KEY_AQUI"
+api_secret = "SEU_API_SECRET_AQUI"
+
+# Conectar ao ambiente de teste (Testnet)
+client = Client(api_key, api_secret, testnet=True)
+
+# ⚙️ Parâmetros da estratégia
+par_moeda = "BTCUSDT"
+quantidade = 0.001
+limite_compra = 60000     # preço alvo para comprar
+limite_venda = 62000      # preço alvo para vender
+
+print("🤖 Bot Testnet iniciado...")
+
+while True:
+    try:
+        # Consulta o preço atual
+        ticker = client.get_symbol_ticker(symbol=par_moeda)
+        preco_atual = float(ticker["price"])
+        print(f"💰 Preço atual do {par_moeda}: {preco_atual}")
+
+        # Estratégia simples de compra e venda
+        if preco_atual <= limite_compra:
+            order = client.order_market_buy(symbol=par_moeda, quantity=quantidade)
+            print("✅ Compra executada!")
+            print(order)
+
+        elif preco_atual >= limite_venda:
+            order = client.order_market_sell(symbol=par_moeda, quantity=quantidade)
+            print("💸 Venda executada!")
+            print(order)
+
+        time.sleep(10)  # espera 10 segundos antes de checar de novo
+
+    except Exception as e:
+        print("⚠️ Erro:", e)
+        time.sleep(10)
